@@ -1,0 +1,237 @@
+<xml xmlns="https://developers.google.com/blockly/xml">
+<variables>
+<variable id="PO0)3~~m6jFW+wxay[T-">DustbinPosition</variable>
+</variables>
+<block type="procedures_defnoreturn" id="WtpyD@tEu+EoY=P9iY,D" deletable="false" editable="false" x="50" y="50">
+<field name="NAME">runOpMode</field>
+<comment pinned="false" h="32" w="532">This function is executed when this Op Mode is selected from the Driver Station.</comment>
+<statement name="STACK">
+<block type="comment" id="Lc#BFtj*NTB48YL;eBl.">
+<field name="COMMENT">Put initialization blocks here.</field>
+<next>
+<block type="linearOpMode_waitForStart" id=":`$wN_ci`O;o6P0~.(+g">
+<next>
+<block type="controls_if" id="}Q?5mbxSO8Di;i!__6[y">
+<value name="IF0">
+<block type="linearOpMode_opModeIsActive" id=")o%YFX/#9kvv^sgXr4~5"/>
+</value>
+<statement name="DO0">
+<block type="comment" id="(rU-p_T_/B|vExcs}liL">
+<field name="COMMENT">Put run blocks here.</field>
+<next>
+<block type="controls_whileUntil" id="^0Kagy/e+Ea{rbZPv2G6">
+<field name="MODE">WHILE</field>
+<value name="BOOL">
+<block type="linearOpMode_opModeIsActive" id="e)cr{!2VIET83s,JWC.="/>
+</value>
+<statement name="DO">
+<block type="variables_set" id="|G1(HHYx#T{i5S5h3#EY">
+<field name="VAR" id="PO0)3~~m6jFW+wxay[T-">DustbinPosition</field>
+<value name="VALUE">
+<block type="math_arithmetic" id="YKdSgzZ{_]k|-vl^Q0X)">
+<field name="OP">MINUS</field>
+<value name="A">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="[$$5OD|.V=~6!?acHNI6">
+<field name="VAR" id="PO0)3~~m6jFW+wxay[T-">DustbinPosition</field>
+</block>
+</value>
+<value name="B">
+<shadow type="math_number">
+<field name="NUM">0.1</field>
+</shadow>
+<block type="math_arithmetic" id="qQ`}e6:~F;{$uqn0+%eq">
+<field name="OP">MULTIPLY</field>
+<value name="A">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="gamepad_getProperty_Number" id="k0kad[~JkFihPyC6/(%D">
+<field name="IDENTIFIER">gamepad2</field>
+<field name="PROP">RightStickY</field>
+<data>{"IDENTIFIER":"gamepad2"}</data>
+</block>
+</value>
+<value name="B">
+<shadow type="math_number" id="mRnQRoHRd:h$@b./rA7P">
+<field name="NUM">0.025</field>
+</shadow>
+</value>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="controls_if" id="eqrs6^GSIDh]ElKp~{CT">
+<mutation elseif="1"/>
+<value name="IF0">
+<block type="logic_compare" id="ND?.77(_^Na]pWVZdBN5">
+<field name="OP">LT</field>
+<value name="A">
+<block type="variables_get" id="hnEPXd47+YZOl.q!}Z{~">
+<field name="VAR" id="PO0)3~~m6jFW+wxay[T-">DustbinPosition</field>
+</block>
+</value>
+<value name="B">
+<block type="math_number" id="bI3el2-xKKUOx@jVM-GK">
+<field name="NUM">0</field>
+</block>
+</value>
+</block>
+</value>
+<statement name="DO0">
+<block type="variables_set" id="90~dyN^vUBv]?Ld?{]ft">
+<field name="VAR" id="PO0)3~~m6jFW+wxay[T-">DustbinPosition</field>
+<value name="VALUE">
+<block type="math_number" id="n$*;/Ejkh;k*~~~e;#0]">
+<field name="NUM">0</field>
+</block>
+</value>
+</block>
+</statement>
+<value name="IF1">
+<block type="logic_compare" id="F$y8uq925Tyr1X}i!zbd">
+<field name="OP">GT</field>
+<value name="A">
+<block type="variables_get" id="/UM]{GOp?}K`!8`!qJ]D">
+<field name="VAR" id="PO0)3~~m6jFW+wxay[T-">DustbinPosition</field>
+</block>
+</value>
+<value name="B">
+<block type="math_number" id="hNLXk@PXbBW..`T[kgw|">
+<field name="NUM">1</field>
+</block>
+</value>
+</block>
+</value>
+<statement name="DO1">
+<block type="variables_set" id="r5?+aRU@^@2uejM_ZR5j">
+<field name="VAR" id="PO0)3~~m6jFW+wxay[T-">DustbinPosition</field>
+<value name="VALUE">
+<block type="math_number" id="WJk[1E{g!kZ:dmt2KJG_">
+<field name="NUM">1</field>
+</block>
+</value>
+</block>
+</statement>
+<next>
+<block type="servo_setProperty_Number" id="3Ge/Fo!=|W9u|J8+#xOd">
+<field name="IDENTIFIER">rightServoAsServo</field>
+<field name="PROP">Position</field>
+<data>{"IDENTIFIER":"rightServo"}</data>
+<value name="VALUE">
+<shadow type="math_number">
+<field name="NUM">0</field>
+</shadow>
+<block type="variables_get" id="CkSOd7^}s`+|oyJz9.Y6">
+<field name="VAR" id="PO0)3~~m6jFW+wxay[T-">DustbinPosition</field>
+</block>
+</value>
+<next>
+<block type="servo_setProperty_Number" id="`YlMU=yL(^cf1,@8[U.d">
+<field name="IDENTIFIER">leftServoAsServo</field>
+<field name="PROP">Position</field>
+<data>{"IDENTIFIER":"leftServo"}</data>
+<value name="VALUE">
+<shadow type="math_number">
+<field name="NUM">0</field>
+</shadow>
+<block type="math_arithmetic" id="H=}LPn7/Fi[m0ONtU0VI">
+<field name="OP">MINUS</field>
+<value name="A">
+<shadow type="math_number" id="0tF]i0vemUxO0+$Yo|mB">
+<field name="NUM">1</field>
+</shadow>
+</value>
+<value name="B">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="ZW2)$Itw.=l=,E+7A/~+">
+<field name="VAR" id="PO0)3~~m6jFW+wxay[T-">DustbinPosition</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_addNumericData_Number" id="mGfxayb]6q4g$jD[`b)d">
+<value name="KEY">
+<shadow type="text" id="1kaoEab.IG(2)tmTd536">
+<field name="TEXT">DustbinPosition</field>
+</shadow>
+</value>
+<value name="NUMBER">
+<shadow type="math_number">
+<field name="NUM">123</field>
+</shadow>
+<block type="variables_get" id="r`e?TL-cEHMpd`U/[Y@?">
+<field name="VAR" id="PO0)3~~m6jFW+wxay[T-">DustbinPosition</field>
+</block>
+</value>
+<next>
+<block type="telemetry_addNumericData_Number" id="x]k2m`6|rxT{jG(5?WXT">
+<value name="KEY">
+<shadow type="text" id="2O/mEaC.+Oa_{n1Q}_U#">
+<field name="TEXT">leftServo</field>
+</shadow>
+</value>
+<value name="NUMBER">
+<shadow type="math_number">
+<field name="NUM">123</field>
+</shadow>
+<block type="servo_getProperty_Number" id="rr2t(*=W[P8X]BTAKAal">
+<field name="IDENTIFIER">leftServoAsServo</field>
+<field name="PROP">Position</field>
+<data>{"IDENTIFIER":"leftServo"}</data>
+</block>
+</value>
+<next>
+<block type="telemetry_addNumericData_Number" id="Twe_x?j!z.T4Ko^5%q^{">
+<value name="KEY">
+<shadow type="text" id="dCTM1Um`(##yV**i:[a6">
+<field name="TEXT">rightServo</field>
+</shadow>
+</value>
+<value name="NUMBER">
+<shadow type="math_number">
+<field name="NUM">123</field>
+</shadow>
+<block type="servo_getProperty_Number" id="5g[,eaqI33)zHEawt]cm">
+<field name="IDENTIFIER">rightServoAsServo</field>
+<field name="PROP">Position</field>
+<data>{"IDENTIFIER":"rightServo"}</data>
+</block>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</xml>
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Extra>
+<OpModeMeta flavor="TELEOP" group="" autoTransition="" />
+<Enabled value="true" />
+</Extra>
