@@ -24,7 +24,8 @@ public class FourWheelDrive extends LinearOpMode {
     //define variables
     double multiplier;
     double dustbinPos = .35;
-
+    
+    @Override
     public void runOpMode() {
 
         //configure hardware devices
