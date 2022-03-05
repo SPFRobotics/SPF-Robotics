@@ -1,0 +1,191 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
+
+@TeleOp(name="Holonomic")
+public class holonomic extends LinearOpMode {
+
+    // define hardware devices
+    private DcMotor frontLeft;
+    private DcMotor backLeft;
+    private DcMotor frontRight;
+    private DcMotor backRight;
+    private DcMotor lift1;
+    private DcMotor lift2;
+    private DcMotor carousel;
+    private CRServo collector;
+    private Servo cap;
+
+    //define variables
+    double multiplier;
+    double dustbinPos = .35;
+    boolean liftlock = true;
+    int position = 0;
+    boolean leftPressed = false;
+    boolean rightPressed = false;
+    boolean yPressed = false;
+    double capping = 0.85;
+
+    @Override
+    public void runOpMode() {
+
+        //configure hardware devices
+        System.out.println(hardwareMap.allDeviceMappings);
+        frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
+        backLeft = hardwareMap.get(DcMotor.class, "backLeft");
+        frontRight = hardwareMap.get(DcMotor.class, "frontRight");
+        backRight = hardwareMap.get(DcMotor.class, "backRight");
+        lift1 = hardwareMap.get(DcMotor.class, "linearSlideBottom");
+        lift2 = hardwareMap.get(DcMotor.class, "linearSlideTop");
+        carousel = hardwareMap.get(DcMotor.class,"carousel");
+        collector = hardwareMap.get(CRServo.class, "collector");
+        cap = hardwareMap.get(Servo.class, "cap");
+
+
+        frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontRight.setDirection(DcMotorSimple.Direction.FORWARD);
+        backRight.setDirection(DcMotorSimple.Direction.FORWARD);
+        lift1.setDirection(DcMotorSimple.Direction.REVERSE);
+        lift1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        lift1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        lift2.setDirection(DcMotorSimple.Direction.REVERSE);
+        lift2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        lift2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        carousel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        waitForStart();
+        if (opModeIsActive()) {
+            while (opModeIsActive()) {
+
+                {
+                    if (gamepad2.start) {
+                        liftlock = true;
+                        lift1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        lift2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        lift1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                        lift2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                    }
+                    if (gamepad2.back) liftlock = false;
+                }
+
+                {   // gamepad1 controls capping servo
+
+                    capping=capping-(gamepad1.left_trigger/50)+(gamepad1.right_trigger/50);
+                    if(capping>.85) capping=.85;
+                    if(capping<.4) capping=.4;
+                    cap.setPosition(capping);
+
+                }
+
+                {   // calculate speed multiplier ??
+
+                    if (gamepad1.b) multiplier=1;
+                    else if (gamepad1.y) multiplier=.25;
+                    else if (gamepad1.left_bumper) multiplier=1;
+                    else if (gamepad1.right_bumper) multiplier=.25;
+                    else multiplier=.5;
+
+                }
+
+                {   // Move Mecanum Wheels with gamepad1 sticks
+
+                    frontLeft.setPower(multiplier * (gamepad1.left_stick_y - gamepad1.left_stick_x - gamepad1.right_stick_x));
+                    backLeft.setPower(multiplier * (gamepad1.left_stick_y + gamepad1.left_stick_x - gamepad1.right_stick_x));
+                    frontRight.setPower(multiplier * (gamepad1.left_stick_y + gamepad1.left_stick_x + gamepad1.right_stick_x));
+                    backRight.setPower(multiplier * (gamepad1.left_stick_y - gamepad1.left_stick_x + gamepad1.right_stick_x));
+
+                }
+
+
+                {   // move lift with gamepad2 left stick
+
+                    if (lift1.getCurrentPosition() < -2500 && liftlock) lift1.setPower(0.15);
+                    else if (lift1.getCurrentPosition() > 0 && liftlock) lift1.setPower(-0.15);
+                    else lift1.setPower(gamepad2.left_stick_y);
+
+                    if (lift2.getCurrentPosition() < -4750 && liftlock) lift2.setPower(0.15);
+                    else if (lift2.getCurrentPosition() > 0 && liftlock) lift2.setPower(-0.15);
+                    else lift2.setPower(gamepad2.right_stick_y);
+
+                    telemetry.addData("lift1", lift1.getCurrentPosition());
+                    telemetry.addData("lift2", lift2.getCurrentPosition());
+
+                }
+
+                {
+                    if (gamepad2.y && !yPressed) {
+                        if(lift1.getMode()==DcMotor.RunMode.RUN_TO_POSITION) {lift1.setMode(DcMotor.RunMode.RUN_USING_ENCODER); lift2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);}
+                        else {lift1.setMode(DcMotor.RunMode.RUN_TO_POSITION); lift2.setMode(DcMotor.RunMode.RUN_TO_POSITION);}
+                        yPressed = true;
+                    } else if (!gamepad2.y) yPressed = false;
+
+                    telemetry.addData("liftmode", lift1.getMode());
+                }
+
+                {
+                    if(lift1.getMode()==DcMotor.RunMode.RUN_TO_POSITION){
+                        lift1.setPower(1);
+                        lift2.setPower(1);
+                        if(position==0){
+                            lift1.setTargetPosition(0);
+                            lift2.setTargetPosition(0);
+                        } else if(position==1) {
+                            lift1.setTargetPosition(-1200);
+                            lift2.setTargetPosition(0);
+                        } else if(position==2) {
+                            lift1.setTargetPosition(-2400);
+                            lift2.setTargetPosition(-1700);
+                        } else if(position==3) {
+                            lift1.setTargetPosition(-2400);
+                            lift2.setTargetPosition(-4400);
+                        }
+                    }
+                }
+
+                {   // set the lift position
+
+                    // if gamepad2.left_bumper is pressed then released, add 1 to position
+                    if (gamepad2.left_bumper && !leftPressed) {
+                        if(position > 0) position--;
+                        leftPressed = true;
+                    } else if (!gamepad2.left_bumper) leftPressed = false;
+
+                    if (gamepad2.right_bumper && !rightPressed) {
+                        if(position < 3) position++;
+                        rightPressed = true;
+                    } else if (!gamepad2.right_bumper) rightPressed = false;
+
+                    telemetry.addData("position", position);
+
+                }
+
+                {   // spin collector with gamepad2 dpad
+
+                    if (gamepad2.dpad_up) collector.setPower(1);
+                    else if (gamepad2.dpad_down) collector.setPower(-1);
+                    else collector.setPower(0);
+
+                    telemetry.addData("collector", collector.getPower());
+                    telemetry.addData("dpad", gamepad2.dpad_up? "up" : gamepad2.dpad_down? "down" : "none");
+
+                }
+
+                {   // spin carousel with gamepad2 triggers
+
+                    if (gamepad2.y) carousel.setPower((gamepad2.right_trigger - gamepad2.left_trigger) / 3);
+                    if (gamepad2.b) carousel.setPower((gamepad2.right_trigger - gamepad2.left_trigger) / 4);
+                    else carousel.setPower((gamepad2.right_trigger - gamepad2.left_trigger) / 5);
+                    telemetry.addData("carousel", carousel.getPower());
+
+                }
+                telemetry.update();
+            }
+        }
+    }
+}
