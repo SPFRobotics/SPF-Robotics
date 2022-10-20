@@ -1,1 +1,74 @@
+package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
+
+@TeleOp(name = "MecanumWheelTest (Blocks to Java)")
+public class MecanumWheelTest extends LinearOpMode {
+ 
+  private DcMotor frontRight;
+  private DcMotor frontLeft;
+  private DcMotor backRight;
+  private DcMotor backLeft;
+  private Servo leftServo;
+  private Servo rightServo;
+  private Servo arm;
+
+  /**
+   * This function is executed when this Op Mode is selected from the Driver Station.
+   */
+  @Override
+  public void runOpMode() {
+    double armPos;
+
+    frontRight = hardwareMap.get(DcMotor.class, "frontRight");
+    frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
+    backRight = hardwareMap.get(DcMotor.class, "backRight");
+    backLeft = hardwareMap.get(DcMotor.class, "backLeft");
+    leftServo = hardwareMap.get(Servo.class, "leftServo");
+    rightServo = hardwareMap.get(Servo.class, "rightServo");
+    arm = hardwareMap.get(Servo.class, "arm");
+
+    // Put initialization blocks here.
+    frontRight.setDirection(DcMotorSimple.Direction.FORWARD);
+    frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+    backRight.setDirection(DcMotorSimple.Direction.FORWARD);
+    backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+    leftServo.setDirection(Servo.Direction.FORWARD);
+    rightServo.setDirection(Servo.Direction.REVERSE);
+    armPos = 0.5;
+    waitForStart();
+    if (opModeIsActive()) {
+      // Put run blocks here.
+      while (opModeIsActive()) {
+        // Put loop blocks here.
+        frontRight.setPower((-gamepad1.right_stick_x - gamepad1.left_stick_x) - gamepad1.left_stick_y);
+        frontLeft.setPower(gamepad1.right_stick_x + gamepad1.left_stick_x + gamepad1.left_stick_y);
+        backRight.setPower((-gamepad1.right_stick_x + gamepad1.left_stick_x) - gamepad1.left_stick_y);
+        backLeft.setPower((gamepad1.right_stick_x - gamepad1.left_stick_x) + gamepad1.left_stick_y);
+        if (gamepad1.a) {
+          rightServo.setPosition(1);
+          leftServo.setPosition(1);
+          telemetry.addData("claw", "closed");
+        }
+        if (gamepad1.b) {
+          rightServo.setPosition(0.8);
+          leftServo.setPosition(0.8);
+          telemetry.addData("claw", "closed");
+        }
+        if (gamepad1.dpad_up) {
+          armPos += -0.01;
+        }
+        if (gamepad1.dpad_down) {
+          armPos += 0.01;
+        }
+        arm.setPosition(armPos);
+        telemetry.update();
+      }
+    }
+  }
+}
+  
