@@ -46,7 +46,10 @@ public class SleeveDetection extends OpenCvPipeline {
 
     // Percent and mat definitions
     private double yelPercent, cyaPercent, magPercent;
-    private Mat yelMat = new Mat(), cyaMat = new Mat(), magMat = new Mat(), blurredMat = new Mat();
+    private Mat yelMat = new Mat();
+    private Mat cyaMat = new Mat();
+    private Mat magMat = new Mat();
+    private Mat blurredMat = new Mat();
 
     // Anchor point definitions
     Point sleeve_pointA = new Point(
