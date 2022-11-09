@@ -1,0 +1,99 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
+import org.firstinspires.ftc.teamcode.SleeveDetection;
+
+@Autonomous
+
+public class MoveToCone extends LinearOpMode {
+    
+    SleeveDetection sleeveDetection = new SleeveDetection();
+    
+    private DcMotor frontRight;
+    private DcMotor backRight;
+    private DcMotor backLeft;
+    private DcMotor frontLeft;
+    
+    private double cm_convert(double cm) {
+        return cm * (537.7 / (10 / Math.PI));
+    }
+    
+    @Override
+    public void runOpMode() throws InterruptedException {
+        frontRight = hardwareMap.get(DcMotor.class, "frontRight");
+        backRight = hardwareMap.get(DcMotor.class, "backRight");
+        backLeft = hardwareMap.get(DcMotor.class, "backLeft");
+        frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
+        
+        frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        backRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        stop_and_reset_encoders_all();
+        waitForStart();
+    }
+    
+    private void stop_and_reset_encoders_all() {
+        backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+    
+    private void Power_all_motor() {
+        double power = 20;
+    
+        backLeft.setPower(power);
+        backRight.setPower(power);
+        frontLeft.setPower(power);
+        frontRight.setPower(power);
+    }
+    
+    private void run_to_position_all() {
+        frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    }
+    
+    int distance = 61;
+    private void forwordMove() {
+        stop_and_reset_encoders_all();
+        backLeft.setTargetPosition((int) cm_convert(distance));
+        backRight.setTargetPosition((int) cm_convert(distance));
+        frontLeft.setTargetPosition((int) cm_convert(distance));
+        frontRight.setTargetPosition((int) cm_convert(distance));
+        run_to_position_all();
+        Power_all_motor();
+    }
+    private void backwardMove() {
+        stop_and_reset_encoders_all();
+        backLeft.setTargetPosition((int) cm_convert(-distance));
+        backRight.setTargetPosition((int) cm_convert(-distance));
+        frontLeft.setTargetPosition((int) cm_convert(-distance));
+        frontRight.setTargetPosition((int) cm_convert(-distance));
+        run_to_position_all();
+        Power_all_motor();
+    }
+    private void leftMove() {
+        stop_and_reset_encoders_all();
+        backLeft.setTargetPosition((int) cm_convert(-distance));
+        backRight.setTargetPosition((int) cm_convert(distance));
+        frontLeft.setTargetPosition((int) cm_convert(distance));
+        frontRight.setTargetPosition((int) cm_convert(-distance));
+        run_to_position_all();
+        Power_all_motor();
+    }
+    private void rightMove() {
+        stop_and_reset_encoders_all();
+        backLeft.setTargetPosition((int) cm_convert(distance));
+        backRight.setTargetPosition((int) cm_convert(-distance));
+        frontLeft.setTargetPosition((int) cm_convert(-distance));
+        frontRight.setTargetPosition((int) cm_convert(distance));
+        run_to_position_all();
+        Power_all_motor();
+    }
+}
