@@ -1,4 +1,5 @@
 package org.firstinspires.ftc.teamcode;
+//package org.firstinspires.ftc.teamcode.opmode.test.vision;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -7,33 +8,25 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.SleeveDetection;
+import org.firstinspires.ftc.teamcode.RunProgramsAutonomous;
+//import org.firstinspires.ftc.teamcode.TestOnBotJavaLink;
 
 @Autonomous
 
 public class MoveToCone extends LinearOpMode {
     
     SleeveDetection sleeveDetection = new SleeveDetection();
+    RunProgramsAutonomous runProgramsAutonomous = new RunProgramsAutonomous();
+    //AUTONOMOUSEncoders sleeve1Detection = new AUTONOMOUSEncoders();
     
     private DcMotor frontRight;
     private DcMotor backRight;
     private DcMotor backLeft;
     private DcMotor frontLeft;
+    private boolean Run;
     
     private double cm_convert(double cm) {
         return cm * (537.7 / (10 / Math.PI));
-    }
-    
-    @Override
-    public void runOpMode() throws InterruptedException {
-        frontRight = hardwareMap.get(DcMotor.class, "frontRight");
-        backRight = hardwareMap.get(DcMotor.class, "backRight");
-        backLeft = hardwareMap.get(DcMotor.class, "backLeft");
-        frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
-        
-        frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
-        backRight.setDirection(DcMotorSimple.Direction.REVERSE);
-        stop_and_reset_encoders_all();
-        waitForStart();
     }
     
     private void stop_and_reset_encoders_all() {
@@ -59,8 +52,8 @@ public class MoveToCone extends LinearOpMode {
         backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
     
-    int distance = 61;
-    private void forwordMove() {
+    public int distance = 1000;
+    private void forwardMove() {
         stop_and_reset_encoders_all();
         backLeft.setTargetPosition((int) cm_convert(distance));
         backRight.setTargetPosition((int) cm_convert(distance));
@@ -96,4 +89,29 @@ public class MoveToCone extends LinearOpMode {
         run_to_position_all();
         Power_all_motor();
     }
+    
+    @Override
+    public void runOpMode() throws InterruptedException {
+        //Run == b
+        frontRight = hardwareMap.get(DcMotor.class, "frontRight");
+        backRight = hardwareMap.get(DcMotor.class, "backRight");
+        backLeft = hardwareMap.get(DcMotor.class, "backLeft");
+        frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
+        
+        frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        backRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        stop_and_reset_encoders_all();
+        waitForStart();
+        
+        if (sleeveDetection.getPosition() == SleeveDetection.ParkingPosition.LEFT && RunProgramsAutonomous.RunMoveToCone == true) {
+            leftMove();
+            forwardMove();
+        } else if(sleeveDetection.getPosition() == SleeveDetection.ParkingPosition.CENTER && RunProgramsAutonomous.RunMoveToCone == true) {
+            forwardMove();
+        } else if(sleeveDetection.getPosition() == SleeveDetection.ParkingPosition.RIGHT && RunProgramsAutonomous.RunMoveToCone == true) {
+            rightMove();
+            forwardMove();
+        }
+    }
+    
 }
