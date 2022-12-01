@@ -1,0 +1,25 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+@Autonomous
+
+public class RunProgramsAutonomous extends LinearOpMode {
+  public static boolean RunAutoRight = false;
+  public static boolean RunMoveToCone = false;
+  ElapsedTime AutoRightTime = new ElapsedTime();
+  ElapsedTime MoveToConeTime = new ElapsedTime();
+  
+  public void runOpMode(){
+    AutoRightTime.reset();
+    MoveToConeTime.reset();
+    //RunAutoRight = true;
+    if(MoveToConeTime.seconds() >= 25){
+      RunAutoRight = false;
+      RunMoveToCone = true;
+    }
+  }
+}
