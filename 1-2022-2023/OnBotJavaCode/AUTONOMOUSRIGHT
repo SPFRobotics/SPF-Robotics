@@ -1,0 +1,265 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
+import org.firstinspires.ftc.teamcode.RunProgramsAutonomous;
+
+@Autonomous(name = "AUTONOMOUSRIGHT (Blocks to Java)", preselectTeleOp = "[OP-MODE] Holonomic Drive")
+public class AUTONOMOUSRIGHT extends LinearOpMode {
+
+  private DcMotor Lift;
+  private Servo clawLeft;
+  private Servo clawRight;
+  private DcMotor backLeft;
+  private DcMotor backRight;
+  private DcMotor frontLeft;
+  private DcMotor frontRight;
+  private Servo clawWrist;
+  
+  RunProgramsAutonomous runProgramsAutonomous = new RunProgramsAutonomous();
+
+  /**
+   * Describe this function...
+   */
+  private double cmToSteps(double cm) {
+    return cm * (537.7 / (10.5 * Math.PI));
+  }
+
+  /**
+   * This function is executed when this Op Mode is selected from the Driver Station.
+   */
+  @Override
+  public void runOpMode() {
+    Lift = hardwareMap.get(DcMotor.class, "Lift");
+    clawLeft = hardwareMap.get(Servo.class, "clawLeft");
+    clawRight = hardwareMap.get(Servo.class, "clawRight");
+    backLeft = hardwareMap.get(DcMotor.class, "backLeft");
+    backRight = hardwareMap.get(DcMotor.class, "backRight");
+    frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
+    frontRight = hardwareMap.get(DcMotor.class, "frontRight");
+    clawWrist = hardwareMap.get(Servo.class, "clawWrist");
+
+    // Put initialization blocks here.
+    Lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    clawLeft.setDirection(Servo.Direction.FORWARD);
+    clawRight.setDirection(Servo.Direction.REVERSE);
+    backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+    frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+    clawWrist.setPosition(0.1);
+    setClaw(false);
+    stop_and_reset_encoders_all();
+    waitForStart();
+    if (opModeIsActive() && RunProgramsAutonomous.RunAutoRight == true) {
+      // Put run blocks here.
+      move(0.25, "right", inToCm(4));
+      move(0.3, "forward", inToCm(6));
+      moveLift(liftLevel(1), 0.3);
+      clawWrist.setPosition(0.75);
+      sleep(1000);
+      setClaw(true);
+      sleep(1000);
+      clawWrist.setPosition(0.45);
+      move(0.5, "backward", inToCm(3));
+      moveLift(liftLevel(0), 0.5);
+      setClaw(false);
+      sleep(750);
+      clawWrist.setPosition(0.3);
+      move(0.5, "backward", inToCm(4));
+      move(0.5, "left", inToCm(24));
+      move(0.5, "forward", inToCm(26));
+      move(0.5, "left", inToCm(12));
+      moveLift(liftLevel(3), 0.5);
+      move(0.25, "forward", inToCm(5));
+      sleep(500);
+      clawWrist.setPosition(0.5);
+      sleep(500);
+      setClaw(true);
+      sleep(500);
+      clawWrist.setPosition(0.1);
+      move(0.25, "backward", inToCm(5));
+      moveLift(liftLevel(0), 0.5);
+      move(0.5, "right", inToCm(12));
+      move(0.5, "backward", inToCm(27));
+      move(0.5, "right", inToCm(52));
+    }
+  }
+
+  /**
+   * Describe this function...
+   */
+  private void run_to_position_all() {
+    frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+  }
+
+  /**
+   * Describe this function...
+   */
+  private double inToCm(int inches) {
+    return inches * 2.54;
+  }
+
+  /**
+   * Describe this function...
+   */
+  private void move(double movePower, String moveDirection, double moveDistance) {
+    stop_and_reset_encoders_all();
+    if (moveDirection.equals("forward")) {
+      backLeft.setTargetPosition((int) cmToSteps(moveDistance));
+      backRight.setTargetPosition((int) cmToSteps(moveDistance));
+      frontLeft.setTargetPosition((int) cmToSteps(moveDistance));
+      frontRight.setTargetPosition((int) cmToSteps(moveDistance));
+      run_to_position_all();
+      backLeft.setPower(movePower);
+      backRight.setPower(movePower);
+      frontLeft.setPower(movePower);
+      frontRight.setPower(movePower);
+    } else if (moveDirection.equals("backward")) {
+      backLeft.setTargetPosition((int) cmToSteps(-moveDistance));
+      backRight.setTargetPosition((int) cmToSteps(-moveDistance));
+      frontLeft.setTargetPosition((int) cmToSteps(-moveDistance));
+      frontRight.setTargetPosition((int) cmToSteps(-moveDistance));
+      run_to_position_all();
+      backLeft.setPower(-movePower);
+      backRight.setPower(-movePower);
+      frontLeft.setPower(-movePower);
+      frontRight.setPower(-movePower);
+    } else if (moveDirection.equals("right")) {
+      backLeft.setTargetPosition((int) cmToSteps(-moveDistance));
+      backRight.setTargetPosition((int) cmToSteps(moveDistance));
+      frontLeft.setTargetPosition((int) cmToSteps(moveDistance));
+      frontRight.setTargetPosition((int) cmToSteps(-moveDistance));
+      run_to_position_all();
+      backLeft.setPower(-movePower);
+      backRight.setPower(movePower);
+      frontLeft.setPower(movePower);
+      frontRight.setPower(-movePower);
+    } else if (moveDirection.equals("left")) {
+      backLeft.setTargetPosition((int) cmToSteps(moveDistance));
+      backRight.setTargetPosition((int) cmToSteps(-moveDistance));
+      frontLeft.setTargetPosition((int) cmToSteps(-moveDistance));
+      frontRight.setTargetPosition((int) cmToSteps(moveDistance));
+      run_to_position_all();
+      backLeft.setPower(movePower);
+      backRight.setPower(-movePower);
+      frontLeft.setPower(-movePower);
+      frontRight.setPower(movePower);
+    } else {
+      telemetry.addData("Error", "move direction must be forward,backward,left, or right.");
+      telemetry.update();
+      terminateOpModeNow();
+    }
+    while (frontLeft.isBusy() && frontRight.isBusy() && backLeft.isBusy() && backRight.isBusy()) {
+      telemetry.addData("test", "attempting to move...");
+      telemetry.update();
+    }
+    powerZero();
+    telemetry.addData("test", "done!");
+    telemetry.update();
+  }
+
+  /**
+   * Describe this function...
+   */
+  private void moveLift(int position, double power) {
+    Lift.setTargetPosition(position);
+    Lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    if (position < Lift.getCurrentPosition()) {
+      Lift.setPower(-power);
+    } else {
+      Lift.setPower(power);
+    }
+    while (Lift.isBusy()) {
+      telemetry.addData("liftPos", Lift.getCurrentPosition());
+      telemetry.addData("target", position);
+      telemetry.update();
+    }
+  }
+
+  /**
+   * Describe this function...
+   */
+  private void setClaw(boolean open) {
+    if (open) {
+      clawRight.setPosition(0.2);
+      clawLeft.setPosition(0.2);
+      telemetry.addData("claw", "open");
+    } else {
+      clawRight.setPosition(0);
+      clawLeft.setPosition(0);
+      telemetry.addData("claw", "closed");
+    }
+    telemetry.update();
+  }
+
+  /**
+   * Describe this function...
+   */
+  private void rotate(double rotAngle, double rotPower) {
+    double dist;
+
+    dist = cmToSteps(rotAngle * 0.59);
+    stop_and_reset_encoders_all();
+    backLeft.setTargetPosition((int) dist);
+    backRight.setTargetPosition((int) -dist);
+    frontLeft.setTargetPosition((int) dist);
+    frontRight.setTargetPosition((int) -dist);
+    run_to_position_all();
+    backLeft.setPower(rotPower);
+    backRight.setPower(-rotPower);
+    frontLeft.setPower(rotPower);
+    frontRight.setPower(-rotPower);
+    while (frontLeft.isBusy() && frontRight.isBusy() && backLeft.isBusy() && backRight.isBusy()) {
+      telemetry.update();
+    }
+    powerZero();
+  }
+
+  /**
+   * Describe this function...
+   */
+  private int liftLevel(int level) {
+    if (level == 0) {
+      return 1;
+    }
+    if (level == 1) {
+      return 900;
+    }
+    if (level == 2) {
+      return 2000;
+    }
+    if (level == 3) {
+      return 3050;
+    }
+    return 0;
+  }
+
+  /**
+   * Describe this function...
+   */
+  private void stop_and_reset_encoders_all() {
+    backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+  }
+
+  /**
+   * Describe this function...
+   */
+  private void powerZero() {
+    backLeft.setPower(0);
+    backRight.setPower(0);
+    frontLeft.setPower(0);
+    frontRight.setPower(0);
+  }
+}
