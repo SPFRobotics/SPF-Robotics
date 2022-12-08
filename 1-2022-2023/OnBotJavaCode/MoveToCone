@@ -24,6 +24,7 @@ public class MoveToCone extends LinearOpMode {
     private DcMotor backLeft;
     private DcMotor frontLeft;
     private boolean Run;
+    public boolean Go = true;
     
     private double cm_convert(double cm) {
         return cm * (537.7 / (10 / Math.PI));
@@ -34,6 +35,13 @@ public class MoveToCone extends LinearOpMode {
         frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+    
+    private void Brake_all_motor() {
+        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
     
     private void Power_all_motor() {
@@ -52,11 +60,11 @@ public class MoveToCone extends LinearOpMode {
         backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
     
-    public int distance = 1000;
+    public int distance = 20;
     private void forwardMove() {
         stop_and_reset_encoders_all();
         backLeft.setTargetPosition((int) cm_convert(distance));
-        backRight.setTargetPosition((int) cm_convert(distance));
+        backRight.setTargetPosition((int) cm_convert(-distance));
         frontLeft.setTargetPosition((int) cm_convert(distance));
         frontRight.setTargetPosition((int) cm_convert(distance));
         run_to_position_all();
@@ -98,20 +106,63 @@ public class MoveToCone extends LinearOpMode {
         backLeft = hardwareMap.get(DcMotor.class, "backLeft");
         frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
         
-        frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
-        backRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         stop_and_reset_encoders_all();
+        //telemetry.addData("test","testing");
+        //telemetry.update();
         waitForStart();
-        
-        if (sleeveDetection.getPosition() == SleeveDetection.ParkingPosition.LEFT && RunProgramsAutonomous.RunMoveToCone == true) {
+        //RunProgramsAutonomous.RunMoveToCone = true;
+        /*if (sleeveDetection.getPosition() == SleeveDetection.ParkingPosition.LEFT && RunProgramsAutonomous.RunMoveToCone == true) {
+            RunProgramsAutonomous.RunMoveToCone = false;
+            telemetry.addData("works","works1");
+            telemetry.update();
             leftMove();
             forwardMove();
         } else if(sleeveDetection.getPosition() == SleeveDetection.ParkingPosition.CENTER && RunProgramsAutonomous.RunMoveToCone == true) {
+            RunProgramsAutonomous.RunMoveToCone = false;
             forwardMove();
         } else if(sleeveDetection.getPosition() == SleeveDetection.ParkingPosition.RIGHT && RunProgramsAutonomous.RunMoveToCone == true) {
+            RunProgramsAutonomous.RunMoveToCone = false;
+            telemetry.addData("works","works2");
+            telemetry.update();
             rightMove();
             forwardMove();
+        }*/
+        //leftMove();
+        //Brake_all_motor();
+        //Go = false;
+        //stop_and_reset_encoders_all();
+        //Brake_all_motor();
+        if (sleeveDetection.getPosition() == SleeveDetection.ParkingPosition.LEFT && Go == true) {
+            Go = false;
+            //leftMove();
+            forwardMove();
+            while (frontRight.isBusy() && frontLeft.isBusy()  && backRight.isBusy()  && backLeft.isBusy()) {
+                telemetry.addData("works","works1");
+                telemetry.addData("hi","hi");
+                telemetry.update();
+            }
+        } else if(sleeveDetection.getPosition() == SleeveDetection.ParkingPosition.CENTER && Go == true) {
+            Go = false;
+            forwardMove();
+            while (frontRight.isBusy()) {
+                telemetry.addData("works","works2");
+                telemetry.addData("hi","hi");
+                telemetry.update();
+            }
+        } else if(sleeveDetection.getPosition() == SleeveDetection.ParkingPosition.RIGHT && Go == true) {
+            Go = false;
+            rightMove();
+            forwardMove();
+            while (frontRight.isBusy()) {
+                telemetry.addData("works","works3");
+                telemetry.addData("hi","hi");
+                telemetry.update();
+            }
         }
+        //Go = false;
+        //waitForStart();
     }
     
 }
