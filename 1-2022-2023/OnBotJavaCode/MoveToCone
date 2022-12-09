@@ -115,7 +115,7 @@ public class MoveToCone extends LinearOpMode {
     }
     
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void Moving throws InterruptedException {
         frontRight = hardwareMap.get(DcMotor.class, "frontRight");
         backRight = hardwareMap.get(DcMotor.class, "backRight");
         backLeft = hardwareMap.get(DcMotor.class, "backLeft");
