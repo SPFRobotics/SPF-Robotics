@@ -116,7 +116,6 @@ public class MoveToCone extends LinearOpMode {
     
     @Override
     public void runOpMode() throws InterruptedException {
-        //Run == b
         frontRight = hardwareMap.get(DcMotor.class, "frontRight");
         backRight = hardwareMap.get(DcMotor.class, "backRight");
         backLeft = hardwareMap.get(DcMotor.class, "backLeft");
@@ -126,7 +125,7 @@ public class MoveToCone extends LinearOpMode {
         backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         stop_and_reset_encoders_all();
         Brake_all_motor();
-        waitForStart();
+        //waitForStart();
         //RunProgramsAutonomous.RunMoveToCone = true;
         if (sleeveDetection.getPosition() == SleeveDetection.ParkingPosition.LEFT && RunProgramsAutonomous.RunMoveToCone == true) {
             RunProgramsAutonomous.RunMoveToCone = false;
@@ -159,7 +158,6 @@ public class MoveToCone extends LinearOpMode {
             rightMove();
             forwardMove();
         }*/
-        //waitForStart();
     }
     
 }
