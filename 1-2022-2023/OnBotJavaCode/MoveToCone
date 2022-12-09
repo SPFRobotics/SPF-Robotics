@@ -45,7 +45,7 @@ public class MoveToCone extends LinearOpMode {
     }
     
     private void Power_all_motor() {
-        double power = 20;
+        double power = 1;
     
         backLeft.setPower(power);
         backRight.setPower(power);
@@ -60,15 +60,19 @@ public class MoveToCone extends LinearOpMode {
         backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
     
-    public int distance = 20;
+    public int distance = 6;
     private void forwardMove() {
         stop_and_reset_encoders_all();
         backLeft.setTargetPosition((int) cm_convert(distance));
-        backRight.setTargetPosition((int) cm_convert(-distance));
+        backRight.setTargetPosition((int) cm_convert(distance));
         frontLeft.setTargetPosition((int) cm_convert(distance));
         frontRight.setTargetPosition((int) cm_convert(distance));
         run_to_position_all();
         Power_all_motor();
+        while (opModeIsActive() && frontRight.isBusy() && frontLeft.isBusy()  && backRight.isBusy()  && backLeft.isBusy()) {
+            telemetry.addData("hi","hi");
+            telemetry.update();
+        }
     }
     private void backwardMove() {
         stop_and_reset_encoders_all();
@@ -78,6 +82,10 @@ public class MoveToCone extends LinearOpMode {
         frontRight.setTargetPosition((int) cm_convert(-distance));
         run_to_position_all();
         Power_all_motor();
+        while (opModeIsActive() && frontRight.isBusy() && frontLeft.isBusy()  && backRight.isBusy()  && backLeft.isBusy()) {
+            telemetry.addData("hi","hi");
+            telemetry.update();
+        }
     }
     private void leftMove() {
         stop_and_reset_encoders_all();
@@ -87,6 +95,10 @@ public class MoveToCone extends LinearOpMode {
         frontRight.setTargetPosition((int) cm_convert(-distance));
         run_to_position_all();
         Power_all_motor();
+        while (opModeIsActive() && frontRight.isBusy() && frontLeft.isBusy()  && backRight.isBusy()  && backLeft.isBusy()) {
+            telemetry.addData("hi","hi");
+            telemetry.update();
+        }
     }
     private void rightMove() {
         stop_and_reset_encoders_all();
@@ -96,6 +108,10 @@ public class MoveToCone extends LinearOpMode {
         frontRight.setTargetPosition((int) cm_convert(distance));
         run_to_position_all();
         Power_all_motor();
+        while (opModeIsActive() && frontRight.isBusy() && frontLeft.isBusy()  && backRight.isBusy()  && backLeft.isBusy()) {
+            telemetry.addData("hi","hi");
+            telemetry.update();
+        }
     }
     
     @Override
@@ -109,59 +125,40 @@ public class MoveToCone extends LinearOpMode {
         frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         stop_and_reset_encoders_all();
-        //telemetry.addData("test","testing");
-        //telemetry.update();
+        Brake_all_motor();
         waitForStart();
         //RunProgramsAutonomous.RunMoveToCone = true;
-        /*if (sleeveDetection.getPosition() == SleeveDetection.ParkingPosition.LEFT && RunProgramsAutonomous.RunMoveToCone == true) {
+        if (sleeveDetection.getPosition() == SleeveDetection.ParkingPosition.LEFT && RunProgramsAutonomous.RunMoveToCone == true) {
             RunProgramsAutonomous.RunMoveToCone = false;
             telemetry.addData("works","works1");
             telemetry.update();
+            forwardMove();
             leftMove();
-            forwardMove();
         } else if(sleeveDetection.getPosition() == SleeveDetection.ParkingPosition.CENTER && RunProgramsAutonomous.RunMoveToCone == true) {
-            RunProgramsAutonomous.RunMoveToCone = false;
-            forwardMove();
-        } else if(sleeveDetection.getPosition() == SleeveDetection.ParkingPosition.RIGHT && RunProgramsAutonomous.RunMoveToCone == true) {
             RunProgramsAutonomous.RunMoveToCone = false;
             telemetry.addData("works","works2");
             telemetry.update();
+            forwardMove();
+        } else if(sleeveDetection.getPosition() == SleeveDetection.ParkingPosition.RIGHT && RunProgramsAutonomous.RunMoveToCone == true) {
+            RunProgramsAutonomous.RunMoveToCone = false;
+            telemetry.addData("works","works3");
+            telemetry.update();
+            forwardMove();
+            rightMove();
+        }
+        /*if (sleeveDetection.getPosition() == SleeveDetection.ParkingPosition.LEFT && Go == true) {
+            //Go = false;
+            //leftMove();
+            forwardMove();
+            leftMove();
+        } else if(sleeveDetection.getPosition() == SleeveDetection.ParkingPosition.CENTER && Go == true) {
+            //Go = false;
+            forwardMove();
+        } else if(sleeveDetection.getPosition() == SleeveDetection.ParkingPosition.RIGHT && Go == true) {
+            //Go = false;
             rightMove();
             forwardMove();
         }*/
-        //leftMove();
-        //Brake_all_motor();
-        //Go = false;
-        //stop_and_reset_encoders_all();
-        //Brake_all_motor();
-        if (sleeveDetection.getPosition() == SleeveDetection.ParkingPosition.LEFT && Go == true) {
-            Go = false;
-            //leftMove();
-            forwardMove();
-            while (frontRight.isBusy() && frontLeft.isBusy()  && backRight.isBusy()  && backLeft.isBusy()) {
-                telemetry.addData("works","works1");
-                telemetry.addData("hi","hi");
-                telemetry.update();
-            }
-        } else if(sleeveDetection.getPosition() == SleeveDetection.ParkingPosition.CENTER && Go == true) {
-            Go = false;
-            forwardMove();
-            while (frontRight.isBusy()) {
-                telemetry.addData("works","works2");
-                telemetry.addData("hi","hi");
-                telemetry.update();
-            }
-        } else if(sleeveDetection.getPosition() == SleeveDetection.ParkingPosition.RIGHT && Go == true) {
-            Go = false;
-            rightMove();
-            forwardMove();
-            while (frontRight.isBusy()) {
-                telemetry.addData("works","works3");
-                telemetry.addData("hi","hi");
-                telemetry.update();
-            }
-        }
-        //Go = false;
         //waitForStart();
     }
     
