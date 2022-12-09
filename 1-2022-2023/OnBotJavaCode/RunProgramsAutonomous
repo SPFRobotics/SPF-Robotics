@@ -4,10 +4,15 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import org.firstinspires.ftc.teamcode.MoveToCone;
+import org.firstinspires.ftc.teamcode.AUTONOMOUSRIGHT;
+
 
 @Autonomous
 
 public class RunProgramsAutonomous extends LinearOpMode {
+  MoveToCone moveToCone = new MoveToCone();
+  AUTONOMOUSRIGHT autonomousRIGHT = new AUTONOMOUSRIGHT();
   public static boolean RunAutoRight = false;
   public static boolean RunMoveToCone = false;
   ElapsedTime AutoRightTime = new ElapsedTime();
@@ -20,6 +25,7 @@ public class RunProgramsAutonomous extends LinearOpMode {
     if(MoveToConeTime.seconds() >= 25){
       RunAutoRight = false;
       RunMoveToCone = true;
+      MoveToCone.Moving();
     }
   }
 }
