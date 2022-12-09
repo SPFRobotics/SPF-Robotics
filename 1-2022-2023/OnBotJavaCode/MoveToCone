@@ -1,0 +1,163 @@
+package org.firstinspires.ftc.teamcode;
+//package org.firstinspires.ftc.teamcode.opmode.test.vision;
+
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
+import org.firstinspires.ftc.teamcode.SleeveDetection;
+import org.firstinspires.ftc.teamcode.RunProgramsAutonomous;
+//import org.firstinspires.ftc.teamcode.TestOnBotJavaLink;
+
+@Autonomous
+
+public class MoveToCone extends LinearOpMode {
+    
+    SleeveDetection sleeveDetection = new SleeveDetection();
+    RunProgramsAutonomous runProgramsAutonomous = new RunProgramsAutonomous();
+    //AUTONOMOUSEncoders sleeve1Detection = new AUTONOMOUSEncoders();
+    
+    private DcMotor frontRight;
+    private DcMotor backRight;
+    private DcMotor backLeft;
+    private DcMotor frontLeft;
+    private boolean Run;
+    public boolean Go = true;
+    
+    private double cm_convert(double cm) {
+        return cm * (537.7 / (10 / Math.PI));
+    }
+    
+    private void stop_and_reset_encoders_all() {
+        backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+    
+    private void Brake_all_motor() {
+        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    }
+    
+    private void Power_all_motor() {
+        double power = 1;
+    
+        backLeft.setPower(power);
+        backRight.setPower(power);
+        frontLeft.setPower(power);
+        frontRight.setPower(power);
+    }
+    
+    private void run_to_position_all() {
+        frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    }
+    
+    public int distance = 6;
+    private void forwardMove() {
+        stop_and_reset_encoders_all();
+        backLeft.setTargetPosition((int) cm_convert(distance));
+        backRight.setTargetPosition((int) cm_convert(distance));
+        frontLeft.setTargetPosition((int) cm_convert(distance));
+        frontRight.setTargetPosition((int) cm_convert(distance));
+        run_to_position_all();
+        Power_all_motor();
+        while (opModeIsActive() && frontRight.isBusy() && frontLeft.isBusy()  && backRight.isBusy()  && backLeft.isBusy()) {
+            telemetry.addData("hi","hi");
+            telemetry.update();
+        }
+    }
+    private void backwardMove() {
+        stop_and_reset_encoders_all();
+        backLeft.setTargetPosition((int) cm_convert(-distance));
+        backRight.setTargetPosition((int) cm_convert(-distance));
+        frontLeft.setTargetPosition((int) cm_convert(-distance));
+        frontRight.setTargetPosition((int) cm_convert(-distance));
+        run_to_position_all();
+        Power_all_motor();
+        while (opModeIsActive() && frontRight.isBusy() && frontLeft.isBusy()  && backRight.isBusy()  && backLeft.isBusy()) {
+            telemetry.addData("hi","hi");
+            telemetry.update();
+        }
+    }
+    private void leftMove() {
+        stop_and_reset_encoders_all();
+        backLeft.setTargetPosition((int) cm_convert(-distance));
+        backRight.setTargetPosition((int) cm_convert(distance));
+        frontLeft.setTargetPosition((int) cm_convert(distance));
+        frontRight.setTargetPosition((int) cm_convert(-distance));
+        run_to_position_all();
+        Power_all_motor();
+        while (opModeIsActive() && frontRight.isBusy() && frontLeft.isBusy()  && backRight.isBusy()  && backLeft.isBusy()) {
+            telemetry.addData("hi","hi");
+            telemetry.update();
+        }
+    }
+    private void rightMove() {
+        stop_and_reset_encoders_all();
+        backLeft.setTargetPosition((int) cm_convert(distance));
+        backRight.setTargetPosition((int) cm_convert(-distance));
+        frontLeft.setTargetPosition((int) cm_convert(-distance));
+        frontRight.setTargetPosition((int) cm_convert(distance));
+        run_to_position_all();
+        Power_all_motor();
+        while (opModeIsActive() && frontRight.isBusy() && frontLeft.isBusy()  && backRight.isBusy()  && backLeft.isBusy()) {
+            telemetry.addData("hi","hi");
+            telemetry.update();
+        }
+    }
+    
+    @Override
+    public void runOpMode() throws InterruptedException {
+        frontRight = hardwareMap.get(DcMotor.class, "frontRight");
+        backRight = hardwareMap.get(DcMotor.class, "backRight");
+        backLeft = hardwareMap.get(DcMotor.class, "backLeft");
+        frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
+        
+        frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        stop_and_reset_encoders_all();
+        Brake_all_motor();
+        //waitForStart();
+        //RunProgramsAutonomous.RunMoveToCone = true;
+        if (sleeveDetection.getPosition() == SleeveDetection.ParkingPosition.LEFT && RunProgramsAutonomous.RunMoveToCone == true) {
+            RunProgramsAutonomous.RunMoveToCone = false;
+            telemetry.addData("works","works1");
+            telemetry.update();
+            forwardMove();
+            leftMove();
+        } else if(sleeveDetection.getPosition() == SleeveDetection.ParkingPosition.CENTER && RunProgramsAutonomous.RunMoveToCone == true) {
+            RunProgramsAutonomous.RunMoveToCone = false;
+            telemetry.addData("works","works2");
+            telemetry.update();
+            forwardMove();
+        } else if(sleeveDetection.getPosition() == SleeveDetection.ParkingPosition.RIGHT && RunProgramsAutonomous.RunMoveToCone == true) {
+            RunProgramsAutonomous.RunMoveToCone = false;
+            telemetry.addData("works","works3");
+            telemetry.update();
+            forwardMove();
+            rightMove();
+        }
+        /*if (sleeveDetection.getPosition() == SleeveDetection.ParkingPosition.LEFT && Go == true) {
+            //Go = false;
+            //leftMove();
+            forwardMove();
+            leftMove();
+        } else if(sleeveDetection.getPosition() == SleeveDetection.ParkingPosition.CENTER && Go == true) {
+            //Go = false;
+            forwardMove();
+        } else if(sleeveDetection.getPosition() == SleeveDetection.ParkingPosition.RIGHT && Go == true) {
+            //Go = false;
+            rightMove();
+            forwardMove();
+        }*/
+    }
+    
+}
