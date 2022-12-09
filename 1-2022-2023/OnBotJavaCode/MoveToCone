@@ -27,7 +27,7 @@ public class MoveToCone extends LinearOpMode {
     public boolean Go = true;
     
     private double cm_convert(double cm) {
-        return cm * (537.7 / (10 / Math.PI));
+        return cm * (537.7 / (9.6012 / Math.PI));
     }
     
     private void stop_and_reset_encoders_all() {
