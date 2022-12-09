@@ -32,7 +32,7 @@ public class AUTONOMOUSRIGHT extends LinearOpMode {
    * This function is executed when this Op Mode is selected from the Driver Station.
    */
   @Override
-  public void runOpMode() {
+  public void MovingCones {
     Lift = hardwareMap.get(DcMotor.class, "Lift");
     clawLeft = hardwareMap.get(Servo.class, "clawLeft");
     clawRight = hardwareMap.get(Servo.class, "clawRight");
