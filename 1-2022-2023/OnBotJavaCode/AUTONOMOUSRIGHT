@@ -25,7 +25,7 @@ public class AUTONOMOUSRIGHT extends LinearOpMode {
    * Describe this function...
    */
   private double cmToSteps(double cm) {
-    return cm * (537.7 / (10.5 * Math.PI));
+    return cm * (537.7 / (9.6012 * Math.PI));
   }
 
   /**
