@@ -21,7 +21,8 @@ public class RunProgramsAutonomous extends LinearOpMode {
   public void runOpMode(){
     AutoRightTime.reset();
     MoveToConeTime.reset();
-    //RunAutoRight = true;
+    RunAutoRight = true;
+    AUTONOMOUSRIGHT.MovingCones();
     if(MoveToConeTime.seconds() >= 25){
       RunAutoRight = false;
       RunMoveToCone = true;
