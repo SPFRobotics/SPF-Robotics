@@ -1,0 +1,147 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
+@Autonomous
+public class FullyAutoMovement extends LinearOpMode {
+
+    private DcMotor frontRight;
+    private DcMotor backRight;
+    private DcMotor backLeft;
+    private DcMotor frontLeft;
+
+    private List<Integer> xCords = Arrays.asList(1,2,3,4,5,6);
+    //right to left (looking from alliance station)
+    private List<Integer> yCords = Arrays.asList(1,2,3,4,5,6);
+    //1:A, 2:B, 3:C, 4:D, 5:E, 6:F
+    //front to back (front being closest row to alliance station)
+    private List<Integer> startCords = Arrays.asList(xCords[0],yCords[1]);
+    //starting locations; Blue: A2(0,1),A5(0,4); Red: F2(5,1),F5(5,4)
+    private List<Integer> endCords = Arrays.asList(xCords[0],yCords[0]);
+    //change the xCords and yCords value to change defalt end location
+    //don't change this change values in PointMove function
+    
+    private double inch_convert(double inch) {
+        return inch * (537.7 / (3.78 * Math.PI));
+    }
+    private void stop_and_reset_encoders_all() {
+        backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+    private void Brake_all_motor() {
+        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    }
+    private void powerZero() {
+        backLeft.setPower(0);
+        backRight.setPower(0);
+        frontLeft.setPower(0);
+        frontRight.setPower(0);
+    }
+    private void Power_all_motor() {
+        double power = 1;
+        backLeft.setPower(power);
+        backRight.setPower(power);
+        frontLeft.setPower(power);
+        frontRight.setPower(power);
+    }
+    private void run_to_position_all() {
+        frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    }
+    private void move(double movePower, String moveDirection, double moveDistance) {
+        stop_and_reset_encoders_all();
+        if (moveDirection.equals("forward")) {
+            backLeft.setTargetPosition((int) inch_convert(moveDistance));
+            backRight.setTargetPosition((int) inch_convert(moveDistance));
+            frontLeft.setTargetPosition((int) inch_convert(moveDistance));
+            frontRight.setTargetPosition((int) inch_convert(moveDistance));
+            run_to_position_all();
+            backLeft.setPower(movePower);
+            backRight.setPower(movePower);
+            frontLeft.setPower(movePower);
+            frontRight.setPower(movePower);
+        } else if (moveDirection.equals("backward")) {
+            backLeft.setTargetPosition((int) inch_convert(-moveDistance));
+            backRight.setTargetPosition((int) inch_convert(-moveDistance));
+            frontLeft.setTargetPosition((int) inch_convert(-moveDistance));
+            frontRight.setTargetPosition((int) inch_convert(-moveDistance));
+            run_to_position_all();
+            backLeft.setPower(-movePower);
+            backRight.setPower(-movePower);
+            frontLeft.setPower(-movePower);
+            frontRight.setPower(-movePower);
+        } else if (moveDirection.equals("right")) {
+            backLeft.setTargetPosition((int) inch_convert(-moveDistance));
+            backRight.setTargetPosition((int) inch_convert(moveDistance));
+            frontLeft.setTargetPosition((int) inch_convert(moveDistance));
+            frontRight.setTargetPosition((int) inch_convert(-moveDistance));
+            run_to_position_all();
+            backLeft.setPower(-movePower);
+            backRight.setPower(movePower);
+            frontLeft.setPower(movePower);
+            frontRight.setPower(-movePower);
+        } else if (moveDirection.equals("left")) {
+            backLeft.setTargetPosition((int) inch_convert(moveDistance));
+            backRight.setTargetPosition((int) inch_convert(-moveDistance));
+            frontLeft.setTargetPosition((int) inch_convert(-moveDistance));
+            frontRight.setTargetPosition((int) inch_convert(moveDistance));
+            run_to_position_all();
+            backLeft.setPower(movePower);
+            backRight.setPower(-movePower);
+            frontLeft.setPower(-movePower);
+            frontRight.setPower(movePower);
+        } else {
+            telemetry.addData("Error", "move direction must be forward,backward,left, or right.");
+            telemetry.update();
+        }
+        while (opModeIsActive() && frontLeft.isBusy() && frontRight.isBusy() && backLeft.isBusy() && backRight.isBusy()) {
+            telemetry.addData("test", "attempting to move...");
+            telemetry.update();
+        }
+        powerZero();
+        telemetry.addData("test", "done!");
+        telemetry.update();
+    }
+
+    public void PointMove(int endPosX, int endPosY) {
+        frontRight = hardwareMap.get(DcMotor.class, "frontRight");
+        backRight = hardwareMap.get(DcMotor.class, "backRight");
+        backLeft = hardwareMap.get(DcMotor.class, "backLeft");
+        frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
+        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        List<Integer> pointDifference = Arrays.asList(0,0);
+        endCords[0] = xCords[endPosX];
+        endCords[1] = yCords[endPosY];
+
+        stop_and_reset_encoders_all();
+        waitForStart();
+        if (opModeIsActive()) {
+            pointDifference[0] = endCords[0] - startCords[0];
+            pointDifference[1] = endCords[1] - startCords[1];
+            move(0.25, "left", pointDifference[0]*24);
+            move(0.25, "forward", pointDifference[1]*24);
+            startCords[0] = endCords[0];
+            startCords[1] = endCords[1];
+        }
+    }
+
+    public void runOpMode() {
+        PointMove(4,3);
+    }
+}
