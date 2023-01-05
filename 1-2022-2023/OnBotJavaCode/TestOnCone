@@ -1,0 +1,15 @@
+package org.firstinspires.ftc.teamcode;
+
+//import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
+@TeleOp
+
+public class TestOnCone extends LinearOpMode{
+  public OnCone = False;
+  
+  public DistanceSensor distance;
+  
+  if (distance.(distance)
