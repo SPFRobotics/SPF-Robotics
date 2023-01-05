@@ -1,0 +1,10 @@
+Format is (Moves made), then (points scored), then (time it took)
+After any junction the robot goes to cones
+
+At 10,000 runs, 22 secs(stoping time), 0.5 secs(moving time):
+  1) Moves: ['lowJunc', 'Up', 'groundJunc', 'Up', 'Left', 'Left', 'highJunc', 'groundJunc', 'Up', 'Down', 'groundJunc', 'Left', 'Right', 'groundJunc', 'Left', 'highJunc']
+      Score: 21, Time: 26.5
+  2) Moves: ['lowJunc', 'Down', 'lowJunc', 'Down', 'lowJunc', 'Left', 'highJunc', 'groundJunc', 'Left', 'highJunc']
+      Score: 21, Time: 25.0
+  3) Moves: ['Up', 'Left', 'lowJunc', 'groundJunc', 'groundJunc', 'groundJunc', 'groundJunc', 'Down', 'Up', 'Left', 'highJunc', 'Left', 'highJunc']
+      Score: 21, Time: 24.5
