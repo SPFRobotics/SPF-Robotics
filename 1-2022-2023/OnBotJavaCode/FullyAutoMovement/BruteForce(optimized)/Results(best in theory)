@@ -1,0 +1,7 @@
+Format is (Moves made), then (points scored), then (time it took)
+After any junction the robot goes to cones
+It took 110.5075 minutes to do 10 million runs
+
+At 10,000,000 runs, 22 secs(stoping time), 0.5 secs(moving time):
+  1) Moves: ['lowJunc', 'groundJunc', 'groundJunc', 'groundJunc', 'groundJunc', 'groundJunc', 'groundJunc', 'groundJunc', 'Left', 'highJunc', 'Left', 'highJunc']
+      Score: 27, Time: 27.0
