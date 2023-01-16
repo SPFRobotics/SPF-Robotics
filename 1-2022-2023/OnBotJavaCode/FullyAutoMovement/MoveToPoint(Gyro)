@@ -1,10 +1,20 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import java.util.Arrays;
+import java.util.List;
+import org.firstinspires.ftc.robotcore.external.JavaUtil;
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 
 @Autonomous
 public class FullyAutoMovement extends LinearOpMode {
@@ -13,7 +23,9 @@ public class FullyAutoMovement extends LinearOpMode {
     private DcMotor backRight;
     private DcMotor backLeft;
     private DcMotor frontLeft;
-    private GyroSensor gyro;
+    //private GyroSensor gyro;
+    private BNO055IMU imu;
+    double globalAngle;
 
     private double strafeMult = 1.2;
     private List<Integer> xCords = Arrays.asList(1,2,3,4,5,6);
@@ -151,9 +163,14 @@ public class FullyAutoMovement extends LinearOpMode {
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        gyro = hardwareMap.GyroSensor.get("gyro");
-        gyro.calibrate();
-        while (!isStopRequested() && gyro.isCalibrating())
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.mode = BNO055IMU.SensorMode.IMU;
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.loggingEnabled = false;
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
+        while (!isStopRequested() && !imu.isGyroCalibrated())
         {
             idle();
         }
@@ -178,7 +195,7 @@ public class FullyAutoMovement extends LinearOpMode {
     }
 
     private void Corrections() {
-        double heading = gyro.getHeading();
+        double heading = imu.getHeading();
         double correction;
 
         if (heading == 0) {
@@ -189,10 +206,10 @@ public class FullyAutoMovement extends LinearOpMode {
             correction = -heading;
         }
         
-        while (opModeIsActive() && gyro.getHeading() != 0) {
-            if (gyro.getHeading() == 0) {
+        while (opModeIsActive() && imu.getHeading() != 0) {
+            if (imu.getHeading() == 0) {
                 powerZero();
-            } else if (gyro.getHeading() > 0) {
+            } else if (imu.getHeading() > 0) {
                 Turn(0.25,"right");
             }
         }

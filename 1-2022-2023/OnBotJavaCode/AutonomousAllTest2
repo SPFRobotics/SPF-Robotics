@@ -1,0 +1,406 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.teamcode.SleeveDetection;
+
+@Autonomous
+public class AutonomousAllTest2 extends LinearOpMode{
+
+    public static boolean RunAutoRight = false;
+    public static boolean RunMoveToCone = false;
+    ElapsedTime AutoRightTime = new ElapsedTime();
+    ElapsedTime MoveToConeTime = new ElapsedTime();
+    SleeveDetection sleeveDetection = new SleeveDetection();
+    public final String parkLocation = sleeveDetection.getPosition().toString();
+    private double strafeMult = 1.2;
+    //parkLocation = sleeveDetection.getPosition().toString();
+    
+    public void runOpMode() throws InterruptedException{
+        AutoRightTime.reset();
+        MoveToConeTime.reset();
+        //telemetry.addData("parkLoc", sleeveDetection.getPosition());
+        //telemetry.addData("test", parkLocation);
+        
+        RunAutoRight = true;
+        MovingCones();
+        if(MoveToConeTime.seconds() >= 25){
+            RunAutoRight = false;
+            RunMoveToCone = true;
+            Moving();
+        }
+    }
+    
+    private DcMotor Lift;
+    private Servo clawLeft;
+    private Servo clawRight;
+    private DcMotor backLeft;
+    private DcMotor backRight;
+    private DcMotor frontLeft;
+    private DcMotor frontRight;
+    private Servo clawWrist;
+    private GyroSensor gyro;
+
+    private List<Integer> xCords = Arrays.asList(1,2,3,4,5,6);
+    //right to left (looking from alliance station)
+    private List<Integer> yCords = Arrays.asList(1,2,3,4,5,6);
+    //1:A, 2:B, 3:C, 4:D, 5:E, 6:F
+    //front to back (front being closest row to alliance station)
+    private List<Integer> startCords = Arrays.asList(xCords[0],yCords[1]);
+    //starting locations; Blue: A2(0,1),A5(0,4); Red: F2(5,1),F5(5,4)
+    private List<Integer> endCords = Arrays.asList(xCords[0],yCords[0]);
+    //change the xCords and yCords value to change defalt end location
+    //don't change this; change values in PointMove function instead
+    
+    private double inch_convert(double inch) {
+        return inch * (537.7 / (3.78 * Math.PI));
+    }
+    private void Initializtion() {
+        Lift = hardwareMap.get(DcMotor.class, "Lift");
+        clawLeft = hardwareMap.get(Servo.class, "clawLeft");
+        clawRight = hardwareMap.get(Servo.class, "clawRight");
+        backLeft = hardwareMap.get(DcMotor.class, "backLeft");
+        backRight = hardwareMap.get(DcMotor.class, "backRight");
+        frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
+        frontRight = hardwareMap.get(DcMotor.class, "frontRight");
+        clawWrist = hardwareMap.get(Servo.class, "clawWrist");
+        gyro = hardwareMap.GyroSensor.get("gyro");
+        Lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        clawLeft.setDirection(Servo.Direction.REVERSE);
+        clawRight.setDirection(Servo.Direction.FORWARD);
+        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        clawWrist.scaleRange(0, 0.4);
+        clawWrist.setPosition(0.1);
+        setClaw(false);
+        stop_and_reset_encoders_all();
+        gyro.calibrate();
+        while (!isStopRequested() && gyro.isCalibrating()) {
+            idle();
+        }
+    }
+    public void MovingCones() {
+        Initializtion();
+        waitForStart();
+        if (opModeIsActive() && RunAutoRight == true) {
+            
+        }
+    }
+    private void run_to_position_all() {
+        frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    }
+    private double inToCm(int inches) {
+        return inches * 2.54;
+    }
+    private void move(double movePower, String moveDirection, double moveDistance) {
+        stop_and_reset_encoders_all();
+        if (moveDirection.equals("forward")) {
+            backLeft.setTargetPosition((int) inch_convert(moveDistance));
+            backRight.setTargetPosition((int) inch_convert(moveDistance));
+            frontLeft.setTargetPosition((int) inch_convert(moveDistance));
+            frontRight.setTargetPosition((int) inch_convert(moveDistance));
+            run_to_position_all();
+            backLeft.setPower(movePower);
+            backRight.setPower(movePower);
+            frontLeft.setPower(movePower);
+            frontRight.setPower(movePower);
+        } else if (moveDirection.equals("backward")) {
+            backLeft.setTargetPosition((int) inch_convert(-moveDistance));
+            backRight.setTargetPosition((int) inch_convert(-moveDistance));
+            frontLeft.setTargetPosition((int) inch_convert(-moveDistance));
+            frontRight.setTargetPosition((int) inch_convert(-moveDistance));
+            run_to_position_all();
+            backLeft.setPower(-movePower);
+            backRight.setPower(-movePower);
+            frontLeft.setPower(-movePower);
+            frontRight.setPower(-movePower);
+        } else if (moveDirection.equals("right")) {
+            backLeft.setTargetPosition((int) inch_convert(-moveDistance*strafeMult));
+            backRight.setTargetPosition((int) inch_convert(moveDistance*strafeMult));
+            frontLeft.setTargetPosition((int) inch_convert(moveDistance*strafeMult));
+            frontRight.setTargetPosition((int) inch_convert(-moveDistance*strafeMult));
+            run_to_position_all();
+            backLeft.setPower(-movePower);
+            backRight.setPower(movePower);
+            frontLeft.setPower(movePower);
+            frontRight.setPower(-movePower);
+        } else if (moveDirection.equals("left")) {
+            backLeft.setTargetPosition((int) inch_convert(moveDistance*strafeMult));
+            backRight.setTargetPosition((int) inch_convert(-moveDistance*strafeMult));
+            frontLeft.setTargetPosition((int) inch_convert(-moveDistance*strafeMult));
+            frontRight.setTargetPosition((int) inch_convert(moveDistance*strafeMult));
+            run_to_position_all();
+            backLeft.setPower(movePower);
+            backRight.setPower(-movePower);
+            frontLeft.setPower(-movePower);
+            frontRight.setPower(movePower);
+        } else {
+            telemetry.addData("Error", "move direction must be forward,backward,left, or right.");
+            telemetry.update();
+            terminateOpModeNow();
+        }
+        while (frontLeft.isBusy() && frontRight.isBusy() && backLeft.isBusy() && backRight.isBusy()) {
+            telemetry.addData("test", "attempting to move...");
+            telemetry.update();
+        }
+        powerZero();
+        telemetry.addData("test", "done!");
+        telemetry.update();
+    }
+    private void moveLift(int position, double power) {
+        Lift.setTargetPosition(position);
+        Lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        if (position < Lift.getCurrentPosition()) {
+            Lift.setPower(-power);
+        } else {
+            Lift.setPower(power);
+        }
+        while (Lift.isBusy()) {
+            telemetry.addData("liftPos", Lift.getCurrentPosition());
+            telemetry.addData("target", position);
+            telemetry.update();
+        }
+    }
+    private void setClaw(boolean open) {
+        if (open) {
+            clawRight.setPosition(0);
+            clawLeft.setPosition(0);
+            telemetry.addData("claw", "open");
+        } else {
+            clawRight.setPosition(0.2);
+            clawLeft.setPosition(0.2);
+            telemetry.addData("claw", "closed");
+        }
+        telemetry.update();
+    }
+    private int liftLevel(int level) {
+        if (level == 0) {
+            return 1;
+        }
+        if (level == 1) {
+            return 900;
+        }
+        if (level == 2) {
+            return 2000;
+        }
+        if (level == 3) {
+            return 3050;
+        }
+            return 0;
+    }
+    private void stop_and_reset_encoders_all() {
+        backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+    private void powerZero() {
+        backLeft.setPower(0);
+        backRight.setPower(0);
+        frontLeft.setPower(0);
+        frontRight.setPower(0);
+    }
+    private void Turn(double power, String turnDirection) {
+        stop_and_reset_encoders_all();
+        if (turnDirection.equals("right")) {
+            run_to_position_all();
+            backLeft.setPower(power);
+            backRight.setPower(power);
+            frontLeft.setPower(-power);
+            frontRight.setPower(-power);
+        } else if (turnDirection.equals("left")) {
+            run_to_position_all();
+            backLeft.setPower(-power);
+            backRight.setPower(-power);
+            frontLeft.setPower(power);
+            frontRight.setPower(power);
+        } else {
+            telemetry.addData("Error", "turn direction must be left, or right.");
+            telemetry.update();
+        }
+        while (opModeIsActive() && frontLeft.isBusy() && frontRight.isBusy() && backLeft.isBusy() && backRight.isBusy()) {
+            telemetry.addData("test", "attempting to move...");
+            telemetry.update();
+        }
+    }
+    private void PointMove(int endPosX, int endPosY) {
+        
+        List<Integer> pointDifference = Arrays.asList(0,0);
+        endCords[0] = xCords[endPosX];
+        endCords[1] = yCords[endPosY];
+
+        stop_and_reset_encoders_all();
+        waitForStart();
+        if (opModeIsActive()) {
+            pointDifference[0] = endCords[0] - startCords[0];
+            pointDifference[1] = endCords[1] - startCords[1];
+            move(0.25, "left", pointDifference[0]*24);
+            move(0.25, "forward", pointDifference[1]*24);
+            startCords[0] = endCords[0];
+            startCords[1] = endCords[1];
+        }
+    }
+    private void Corrections() {
+        double heading = gyro.getHeading();
+        double correction;
+
+        if (heading == 0) {
+            correction = 0;
+        } else if (heading > 180) {
+            correction = 360 - heading;
+        } else {
+            correction = -heading;
+        }
+        
+        while (opModeIsActive() && gyro.getHeading() != 0) {
+            if (gyro.getHeading() == 0) {
+                powerZero();
+            } else if (gyro.getHeading() > 0) {
+                Turn(0.25,"right");
+            }
+        }
+    }
+    
+    
+    private boolean Run;
+    public boolean Go = true;
+    public int distance = 6;
+    //private double strafeMult = 1.2;
+    //SleeveDetection sleeveDetection = new SleeveDetection();
+    
+    private double cm_convert(double cm) {
+        return cm * (537.7 / (9.6012 / Math.PI));
+    }
+    
+    /*private void stop_and_reset_encoders_all() {
+        backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }*/
+    
+    private void Brake_all_motor() {
+        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    }
+
+    private void Power_all_motor() {
+        double power = 1;
+
+        backLeft.setPower(power);
+        backRight.setPower(power);
+        frontLeft.setPower(power);
+        frontRight.setPower(power);
+    }
+
+    /*private void run_to_position_all() {
+        frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    }*/
+    
+    private void forwardMove() {
+        stop_and_reset_encoders_all();
+        backLeft.setTargetPosition((int) cm_convert(distance));
+        backRight.setTargetPosition((int) cm_convert(distance));
+        frontLeft.setTargetPosition((int) cm_convert(distance));
+        frontRight.setTargetPosition((int) cm_convert(distance));
+        run_to_position_all();
+        Power_all_motor();
+        while (opModeIsActive() && frontRight.isBusy() && frontLeft.isBusy()  && backRight.isBusy()  && backLeft.isBusy()) {
+        telemetry.addData("hi","hi");
+        telemetry.update();
+        }
+    }
+    private void backwardMove() {
+        stop_and_reset_encoders_all();
+        backLeft.setTargetPosition((int) cm_convert(-distance));
+        backRight.setTargetPosition((int) cm_convert(-distance));
+        frontLeft.setTargetPosition((int) cm_convert(-distance));
+        frontRight.setTargetPosition((int) cm_convert(-distance));
+        run_to_position_all();
+        Power_all_motor();
+        while (opModeIsActive() && frontRight.isBusy() && frontLeft.isBusy()  && backRight.isBusy()  && backLeft.isBusy()) {
+            telemetry.addData("hi","hi");
+            telemetry.update();
+        }
+    }
+    private void leftMove() {
+        stop_and_reset_encoders_all();
+        backLeft.setTargetPosition((int) cm_convert(-distance*strafeMult));
+        backRight.setTargetPosition((int) cm_convert(distance*strafeMult));
+        frontLeft.setTargetPosition((int) cm_convert(distance*strafeMult));
+        frontRight.setTargetPosition((int) cm_convert(-distance*strafeMult));
+        run_to_position_all();
+        Power_all_motor();
+        while (opModeIsActive() && frontRight.isBusy() && frontLeft.isBusy()  && backRight.isBusy()  && backLeft.isBusy()) {
+            telemetry.addData("hi","hi");
+            telemetry.update();
+        }
+    }
+    private void rightMove() {
+        stop_and_reset_encoders_all();
+        backLeft.setTargetPosition((int) cm_convert(distance*strafeMult));
+        backRight.setTargetPosition((int) cm_convert(-distance*strafeMult));
+        frontLeft.setTargetPosition((int) cm_convert(-distance*strafeMult));
+        frontRight.setTargetPosition((int) cm_convert(distance*strafeMult));
+        run_to_position_all();
+        Power_all_motor();
+        while (opModeIsActive() && frontRight.isBusy() && frontLeft.isBusy()  && backRight.isBusy()  && backLeft.isBusy()) {
+            telemetry.addData("hi","hi");
+            telemetry.update();
+        }
+    }
+
+    //@Override
+    public void Moving() throws InterruptedException {
+        frontRight = hardwareMap.get(DcMotor.class, "frontRight");
+        backRight = hardwareMap.get(DcMotor.class, "backRight");
+        backLeft = hardwareMap.get(DcMotor.class, "backLeft");
+        frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
+        
+        frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        stop_and_reset_encoders_all();
+        Brake_all_motor();
+        //waitForStart();
+        //RunProgramsAutonomous.RunMoveToCone = true;
+        //if (opModeIsActive() && sleeveDetection.getPosition() == SleeveDetection.ParkingPosition.LEFT && RunMoveToCone == true) {
+        if (opModeIsActive() && parkLocation == SleeveDetection.ParkingPosition.LEFT.toString() && RunMoveToCone == true) {
+        RunMoveToCone = false;
+        telemetry.addData("works","works1");
+        telemetry.update();
+        forwardMove();
+        leftMove();
+        //} else if(opModeIsActive() && sleeveDetection.getPosition() == SleeveDetection.ParkingPosition.CENTER && RunMoveToCone == true) {
+        } else if(opModeIsActive() && parkLocation == SleeveDetection.ParkingPosition.CENTER.toString() && RunMoveToCone == true) {
+        RunMoveToCone = false;
+        telemetry.addData("works","works2");
+        telemetry.update();
+        forwardMove();
+        //} else if(opModeIsActive() && sleeveDetection.getPosition() == SleeveDetection.ParkingPosition.RIGHT && RunMoveToCone == true) {
+        } else if(opModeIsActive() && parkLocation == SleeveDetection.ParkingPosition.RIGHT.toString() && RunMoveToCone == true) {
+        RunMoveToCone = false;
+        telemetry.addData("works","works3");
+        telemetry.update();
+        forwardMove();
+        rightMove();
+        }
+    }
+}
