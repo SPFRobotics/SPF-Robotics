@@ -13,7 +13,8 @@ public class FullyAutoMovement extends LinearOpMode {
     private DcMotor backRight;
     private DcMotor backLeft;
     private DcMotor frontLeft;
-    
+    private GyroSensor gyro;
+
     private double strafeMult = 1.2;
     private List<Integer> xCords = Arrays.asList(1,2,3,4,5,6);
     //right to left (looking from alliance station)
@@ -24,7 +25,7 @@ public class FullyAutoMovement extends LinearOpMode {
     //starting locations; Blue: A2(0,1),A5(0,4); Red: F2(5,1),F5(5,4)
     private List<Integer> endCords = Arrays.asList(xCords[0],yCords[0]);
     //change the xCords and yCords value to change defalt end location
-    //don't change this, change values in PointMove function instead
+    //don't change this change values in PointMove function
     
     private double inch_convert(double inch) {
         return inch * (537.7 / (3.78 * Math.PI));
@@ -115,7 +116,31 @@ public class FullyAutoMovement extends LinearOpMode {
         telemetry.update();
     }
 
-    public void PointMove(int endPosX, int endPosY) {
+    private void Turn(double power, String turnDirection) {
+        stop_and_reset_encoders_all();
+        if (turnDirection.equals("right")) {
+            run_to_position_all();
+            backLeft.setPower(power);
+            backRight.setPower(power);
+            frontLeft.setPower(-power);
+            frontRight.setPower(-power);
+        } else if (turnDirection.equals("left")) {
+            run_to_position_all();
+            backLeft.setPower(-power);
+            backRight.setPower(-power);
+            frontLeft.setPower(power);
+            frontRight.setPower(power);
+        } else {
+            telemetry.addData("Error", "turn direction must be left, or right.");
+            telemetry.update();
+        }
+        while (opModeIsActive() && frontLeft.isBusy() && frontRight.isBusy() && backLeft.isBusy() && backRight.isBusy()) {
+            telemetry.addData("test", "attempting to move...");
+            telemetry.update();
+        }
+    }
+
+    private void Initializtion() {
         frontRight = hardwareMap.get(DcMotor.class, "frontRight");
         backRight = hardwareMap.get(DcMotor.class, "backRight");
         backLeft = hardwareMap.get(DcMotor.class, "backLeft");
@@ -126,6 +151,16 @@ public class FullyAutoMovement extends LinearOpMode {
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        gyro = hardwareMap.GyroSensor.get("gyro");
+        gyro.calibrate();
+        while (!isStopRequested() && gyro.isCalibrating())
+        {
+            idle();
+        }
+    }
+
+    public void PointMove(int endPosX, int endPosY) {
+        
         List<Integer> pointDifference = Arrays.asList(0,0);
         endCords[0] = xCords[endPosX];
         endCords[1] = yCords[endPosY];
@@ -142,8 +177,30 @@ public class FullyAutoMovement extends LinearOpMode {
         }
     }
 
+    private void Corrections() {
+        double heading = gyro.getHeading();
+        double correction;
+
+        if (heading == 0) {
+            correction = 0;
+        } else if (heading > 180) {
+            correction = 360 - heading;
+        } else {
+            correction = -heading;
+        }
+        
+        while (opModeIsActive() && gyro.getHeading() != 0) {
+            if (gyro.getHeading() == 0) {
+                powerZero();
+            } else if (gyro.getHeading() > 0) {
+                Turn(0.25,"right");
+            }
+        }
+    }
+
     @Override
     public void runOpMode() {
+        Initializtion();
         PointMove(4,3);
     }
 }
