@@ -70,7 +70,7 @@ public class AutonomousAllTest2 extends LinearOpMode{
         frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
         frontRight = hardwareMap.get(DcMotor.class, "frontRight");
         clawWrist = hardwareMap.get(Servo.class, "clawWrist");
-        gyro = hardwareMap.GyroSensor.get("gyro");
+        //gyro = hardwareMap.GyroSensor.get("gyro");
         Lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         clawLeft.setDirection(Servo.Direction.REVERSE);
         clawRight.setDirection(Servo.Direction.FORWARD);
@@ -84,16 +84,16 @@ public class AutonomousAllTest2 extends LinearOpMode{
         clawWrist.setPosition(0.1);
         setClaw(false);
         stop_and_reset_encoders_all();
-        gyro.calibrate();
+        /*gyro.calibrate();
         while (!isStopRequested() && gyro.isCalibrating()) {
             idle();
-        }
+        }*/
     }
     public void MovingCones() {
         Initializtion();
         waitForStart();
         if (opModeIsActive() && RunAutoRight == true) {
-            
+            //move and placing cone lines
         }
     }
     private void run_to_position_all() {
@@ -186,6 +186,24 @@ public class AutonomousAllTest2 extends LinearOpMode{
         }
         telemetry.update();
     }
+    private void rotate(double rotAngle, double rotPower) {
+        double dist;
+        dist = cmToSteps(rotAngle * (537.7/360));
+        stop_and_reset_encoders_all();
+        backLeft.setTargetPosition((int) dist);
+        backRight.setTargetPosition((int) -dist);
+        frontLeft.setTargetPosition((int) dist);
+        frontRight.setTargetPosition((int) -dist);
+        run_to_position_all();
+        backLeft.setPower(rotPower);
+        backRight.setPower(-rotPower);
+        frontLeft.setPower(rotPower);
+        frontRight.setPower(-rotPower);
+        while (frontLeft.isBusy() && frontRight.isBusy() && backLeft.isBusy() && backRight.isBusy()) {
+            telemetry.update();
+        }
+        powerZero();
+    }
     private int liftLevel(int level) {
         if (level == 0) {
             return 1;
@@ -234,6 +252,32 @@ public class AutonomousAllTest2 extends LinearOpMode{
         while (opModeIsActive() && frontLeft.isBusy() && frontRight.isBusy() && backLeft.isBusy() && backRight.isBusy()) {
             telemetry.addData("test", "attempting to move...");
             telemetry.update();
+        }
+    }
+    private void PlaceCone(String side, String junctionType){
+        if (junctionType == "ground"){
+            moveLift(liftLevel(0), 0.5);
+        } else if (junctionType == "low"){
+            moveLift(liftLevel(1), 0.5);
+        } else if (junctionType == "mid"){
+            moveLift(liftLevel(2), 0.5);
+        } else if (junctionType == "high"){
+            moveLift(liftLevel(3), 0.5);
+        }
+        if (side == "left"){
+            rotate(-45, 0.25);
+            setClaw(true);
+            sleep(0.25);
+            setClaw(false);
+            rotate(45, 0.25);
+            moveLift(liftLevel(0), 0.5);
+        } else if (side == "right"){
+            rotate(45, 0.25);
+            setClaw(true);
+            sleep(0.25);
+            setClaw(false);
+            rotate(-45, 0.25);
+            moveLift(liftLevel(0), 0.5);
         }
     }
     private void PointMove(int endPosX, int endPosY) {
@@ -383,24 +427,24 @@ public class AutonomousAllTest2 extends LinearOpMode{
         //RunProgramsAutonomous.RunMoveToCone = true;
         //if (opModeIsActive() && sleeveDetection.getPosition() == SleeveDetection.ParkingPosition.LEFT && RunMoveToCone == true) {
         if (opModeIsActive() && parkLocation == SleeveDetection.ParkingPosition.LEFT.toString() && RunMoveToCone == true) {
-        RunMoveToCone = false;
-        telemetry.addData("works","works1");
-        telemetry.update();
-        forwardMove();
-        leftMove();
+            RunMoveToCone = false;
+            telemetry.addData("works","works1");
+            telemetry.update();
+            //forwardMove();
+            //leftMove();
+            PointMove(1,0);
         //} else if(opModeIsActive() && sleeveDetection.getPosition() == SleeveDetection.ParkingPosition.CENTER && RunMoveToCone == true) {
         } else if(opModeIsActive() && parkLocation == SleeveDetection.ParkingPosition.CENTER.toString() && RunMoveToCone == true) {
-        RunMoveToCone = false;
-        telemetry.addData("works","works2");
-        telemetry.update();
-        forwardMove();
+            RunMoveToCone = false;
+            telemetry.addData("works","works2");
+            telemetry.update();
+            //forwardMove();
+            PointMove(1,1);
         //} else if(opModeIsActive() && sleeveDetection.getPosition() == SleeveDetection.ParkingPosition.RIGHT && RunMoveToCone == true) {
         } else if(opModeIsActive() && parkLocation == SleeveDetection.ParkingPosition.RIGHT.toString() && RunMoveToCone == true) {
-        RunMoveToCone = false;
-        telemetry.addData("works","works3");
-        telemetry.update();
-        forwardMove();
-        rightMove();
+            RunMoveToCone = false;
+            telemetry.addData("works","works3");
+            telemetry.update();
         }
     }
 }
