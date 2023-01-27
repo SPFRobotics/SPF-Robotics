@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import java.util.Arrays;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -49,10 +50,10 @@ public class AutonomousAllTest3 extends LinearOpMode{
     private DcMotor frontRight;
     private Servo clawWrist;
 
-    private List<Integer> xCords = Arrays.asList(1,2,3,4,5,6); //right to left (looking from alliance station)
-    private List<Integer> yCords = Arrays.asList(1,2,3,4,5,6); //1:A, 2:B, 3:C, 4:D, 5:E, 6:F | front to back (front being closest row to alliance station)
-    private List<Integer> startCords = Arrays.asList(xCords[0],yCords[1]); //starting locations; Blue: A2(0,1),A5(0,4); Red: F2(5,1),F5(5,4)
-    private List<Integer> endCords = Arrays.asList(xCords[0],yCords[0]); //change the xCords and yCords value to change defalt end location
+    private int[] xCords = new int[] {1,2,3,4,5,6}; //right to left (looking from alliance station)
+    private int[] yCords = new int[] {1,2,3,4,5,6}; //1:A, 2:B, 3:C, 4:D, 5:E, 6:F | front to back (front being closest row to alliance station)
+    private int[] startCords = new int[] {xCords[0],yCords[1]}; //starting locations; Blue: A2(0,1),A5(0,4); Red: F2(5,1),F5(5,4)
+    private int[] endCords = new int[] {xCords[0],yCords[0]}; //change the xCords and yCords value to change defalt end location
     //don't change this, change values in PointMove function instead
     
     private double inch_convert(double inch) {
@@ -152,8 +153,8 @@ public class AutonomousAllTest3 extends LinearOpMode{
         telemetry.addData("test", "done!");
         telemetry.update();
     }
-    private void moveLift(int position, double power) {
-        Lift.setTargetPosition(position);
+    private void moveLift(double position, double power) {
+        Lift.setTargetPosition((int) position);
         Lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         if (position < Lift.getCurrentPosition()) {
             Lift.setPower(-power);
@@ -174,7 +175,7 @@ public class AutonomousAllTest3 extends LinearOpMode{
             telemetry.addData("claw", "open");
         } else {
             //clawRight.setPosition(0.2);
-            clawRight.setPosition(1)
+            clawRight.setPosition(1);
             clawLeft.setPosition(0.2);
             telemetry.addData("claw", "closed");
         }
@@ -183,7 +184,7 @@ public class AutonomousAllTest3 extends LinearOpMode{
     private void rotate(double rotAngle, double rotPower) {
         //positive turns right
         double dist;
-        dist = cmToSteps(rotAngle * (537.7/360));
+        dist = rotAngle * (537.7/360);
         stop_and_reset_encoders_all();
         backLeft.setTargetPosition((int) dist);
         backRight.setTargetPosition((int) -dist);
@@ -199,7 +200,7 @@ public class AutonomousAllTest3 extends LinearOpMode{
         }
         powerZero();
     }
-    private void liftCountsToInches(int inches) {
+    private double liftCountsToInches(double inches) {
         return inches * 90;
     }
     private int liftLevel(int level) {
@@ -242,14 +243,14 @@ public class AutonomousAllTest3 extends LinearOpMode{
         if (side == "left"){
             rotate(-45, 0.25);
             setClaw(true);
-            sleep(0.25);
+            sleep(250);
             setClaw(false);
             rotate(45, 0.25);
             moveLift(liftLevel(0), 0.5);
         } else if (side == "right"){
             rotate(45, 0.25);
             setClaw(true);
-            sleep(0.25);
+            sleep(250);
             setClaw(false);
             rotate(-45, 0.25);
             moveLift(liftLevel(0), 0.5);
@@ -257,7 +258,7 @@ public class AutonomousAllTest3 extends LinearOpMode{
     }
     private void PointMove(int endPosX, int endPosY) {
         
-        List<Integer> pointDifference = Arrays.asList(0,0);
+        int[] pointDifference = new int[] {0,0};
         endCords[0] = xCords[endPosX];
         endCords[1] = yCords[endPosY];
 
